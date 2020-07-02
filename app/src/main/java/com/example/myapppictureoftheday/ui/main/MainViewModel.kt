@@ -18,7 +18,6 @@ import java.io.IOException
 
 class MainViewModel(
     private val liveData: MutableLiveData<PictureOfTheDayData> = MutableLiveData(),
-    //LiveData - один из архитектурных компонентов android (пересылка определенных событий на наш экран через .value)
     private val retrofit: PODRetrofitImpl = PODRetrofitImpl()
     ) : ViewModel() {
 
@@ -28,7 +27,7 @@ class MainViewModel(
     }
 
     private fun sendServerRequest(){
-        liveData.value = PictureOfTheDayData.Loading(process = 0) //Процесс загрузки событий на наш экран
+        liveData.value = PictureOfTheDayData.Loading(process = 0) 
         retrofit.getRetrofitImpl().getPictureOfTheDay(apiKey = "OhH1zPWjMnnlr4Rlny6fwYTADVmZTe4jc3P0vcFm").enqueue(object :
         Callback<ServerResponse>{
 
@@ -36,14 +35,14 @@ class MainViewModel(
                 call: Call<ServerResponse>,
                 response: retrofit2.Response<ServerResponse>
             ) {
-                if(response.isSuccessful && response.body() != null){ //Если ответ с сервера получен и какие-то данные пришли, тогда обновляем значение liveData
+                if(response.isSuccessful && response.body() != null){
                     liveData.value = PictureOfTheDayData.Success(response.body()!!)
                 } else{
-                    liveData.value = PictureOfTheDayData.Error(Throwable("Error")) //Иначе передаем неизвестную ошибку
+                    liveData.value = PictureOfTheDayData.Error(Throwable("Error"))
                 }
             }
 
-            override fun onFailure(call: Call<ServerResponse>, t: Throwable) { //Передача более корректной ошибки
+            override fun onFailure(call: Call<ServerResponse>, t: Throwable) { 
                 liveData.value = PictureOfTheDayData.Error(t)
 
             }
@@ -66,18 +65,18 @@ sealed class PictureOfTheDayData{ // классы базовых состоян�
 
 interface PictureOfTheDayApi{ //Создание интерфейса для выхода в интернет
     @GET("planetary/apod")
-    fun getPictureOfTheDay(@Query("api_key") apiKey:String) : Call<ServerResponse> //Запрос на передачу api_key
+    fun getPictureOfTheDay(@Query("api_key") apiKey:String) : Call<ServerResponse> 
 }
 
-class PODRetrofitImpl{ //Этот класс отвечает за выход в интернет/получение данных из интернета
+class PODRetrofitImpl{ 
 
     private val baseUrl = "https://api.nasa.gov/"
 
     fun getRetrofitImpl() : PictureOfTheDayApi{
-        val podRetrofit = Retrofit.Builder() //Создание экземпляра библиотеки для выхода в интернет
+        val podRetrofit = Retrofit.Builder()
         .baseUrl(baseUrl)
-            .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create())) //Получение конвертированных данных
-            .client(createOkHttpClient(PODInterceptor())) // перехват конвертированных данных и передает их в BODY (explanation, url)
+            .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create())) 
+            .client(createOkHttpClient(PODInterceptor())) 
             .build()
         return podRetrofit.create((PictureOfTheDayApi::class.java)) //для корректной распарсировки данных передаем функцию с запросом на подключение по api_key
     }
