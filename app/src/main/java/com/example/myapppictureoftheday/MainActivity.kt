@@ -25,9 +25,6 @@ class EquilateralImageView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyle: Int = 0
     ): AppCompatImageView(context, attrs, defStyle){
-//Добавляется картинка для отображения,
-// перед ее отображением ставим одинаковую ширину и высоту,
-// чтобы видеть изображение в полноэкранном режиме
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, widthMeasureSpec)
     }
